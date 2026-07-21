@@ -59,10 +59,17 @@ if [[ -d "$analysis_root" ]]; then
   fi
   cp "$tutorial_source" "$tutorial_target"
   cp "$repository_root/scripts/smoke_test.py" "$analysis_root/scripts/smoke_test.py"
+  missing_dependencies=()
   if ! grep -q 'ipywidgets' "$analysis_root/pyproject.toml"; then
+    missing_dependencies+=('ipywidgets>=8.1.8')
+  fi
+  if ! grep -q '"pandas<3"' "$analysis_root/pyproject.toml"; then
+    missing_dependencies+=('pandas<3')
+  fi
+  if (( ${#missing_dependencies[@]} > 0 )); then
     (
       cd "$analysis_root"
-      uv add --managed-python 'ipywidgets>=8.1.8'
+      uv add --managed-python "${missing_dependencies[@]}"
     )
   else
     (

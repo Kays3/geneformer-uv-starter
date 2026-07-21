@@ -9,6 +9,7 @@ dependencies = [
   "ipykernel",
   "ipywidgets>=8.1.8",
   "jupyterlab",
+  "pandas<3",
   "torch",
   "transformers>=4.46,<5",
 ]

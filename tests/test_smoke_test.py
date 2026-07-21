@@ -5,6 +5,9 @@ import pytest
 from scripts.smoke_test import find_models
 
 
+ROOT = Path(__file__).resolve().parents[1]
+
+
 def test_find_models_returns_only_configured_geneformer_directories(tmp_path: Path) -> None:
     configured = tmp_path / "Geneformer-V2-104M"
     configured.mkdir()
@@ -39,3 +42,10 @@ def test_find_models_ignores_git_lfs_pointer(tmp_path: Path) -> None:
     )
 
     assert find_models(tmp_path) == []
+
+
+@pytest.mark.parametrize("profile", ["cpu", "cu130", "default"])
+def test_analysis_profiles_constrain_pandas_below_version_three(profile: str) -> None:
+    template = ROOT / "templates" / f"pyproject.{profile}.toml"
+
+    assert '"pandas<3"' in template.read_text(encoding="utf-8")

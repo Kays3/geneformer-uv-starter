@@ -63,8 +63,9 @@ To verify the environment without starting JupyterLab:
 
 If you installed an earlier release, pull and rerun setup. It updates the
 environment in place, adds `ipywidgets` to remove the `IProgress not found`
-warning, and refreshes the distributed tutorial. If the installed tutorial was
-changed, setup first preserves it as
+warning, constrains pandas to the Geneformer-compatible 2.x series, and
+refreshes the distributed tutorial. If the installed tutorial was changed,
+setup first preserves it as
 `01_stage1_cell_type_tutorial.user-backup.ipynb`:
 
 ```bash
@@ -226,6 +227,20 @@ partner images. Those images may omit `python3.12-dev`, causing
 `accumulation-tree` to fail with `fatal error: Python.h: No such file or
 directory`. Current setup avoids that OS-specific dependency by requiring a
 uv-managed Python distribution that includes the headers.
+
+### Tokenizer `KeyError` from `ensembl_id_collapsed`
+
+Geneformer's current tokenizer uses pandas 2.x positional indexing. If an
+older starter environment resolved pandas 3, H5AD tokenization can fail with a
+`KeyError` mentioning `ensembl_id_collapsed`. Update the environment in place:
+
+```bash
+git pull --ff-only
+./setup.sh
+```
+
+Setup constrains pandas below version 3; the input H5AD does not need to be
+recreated or downloaded again.
 
 ## Documentation
 
