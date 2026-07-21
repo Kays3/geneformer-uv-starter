@@ -1,7 +1,8 @@
 # Geneformer + uv starter
 
 Clone this repository, run one setup command, and start Geneformer in
-JupyterLab. The environment is isolated and reproducible with
+JupyterLab. ASUS Ascent GX10 and Lenovo ThinkStation PGX systems are detected
+automatically and use their NVIDIA GB10 GPU. The environment is isolated and reproducible with
 [uv](https://docs.astral.sh/uv/).
 
 This is a community setup helper. It is not affiliated with or endorsed by the
@@ -37,8 +38,8 @@ cd geneformer-uv-starter
 ```
 
 The first setup downloads Geneformer V2 104M and installs its Python
-environment. It can take several minutes. CPU mode is used by default so the
-setup works without an NVIDIA GPU.
+environment. It can take several minutes. Setup automatically selects CUDA
+13.0 on a GB10 ARM64 appliance and CPU mode on other systems.
 
 ### 3. Start Geneformer
 
@@ -55,32 +56,62 @@ To verify the environment without starting JupyterLab:
 ./start.sh check
 ```
 
-## GPU setup
+## ASUS Ascent GX10 and Lenovo ThinkStation PGX
 
-If your NVIDIA driver supports CUDA 13.0 PyTorch wheels, select the GPU profile:
+Both systems use the NVIDIA GB10 Grace Blackwell platform. On either machine,
+the normal quick start is all you need:
 
 ```bash
-./setup.sh cu130
+./setup.sh
 ./start.sh
 ```
 
-The portable PyPI profile is also available:
+Setup checks for an ARM64 CPU and an NVIDIA GPU whose name contains `GB10`,
+then selects native CUDA 13.0 PyTorch wheels. Installation only succeeds after
+PyTorch detects the GPU and completes a CUDA tensor operation.
+
+Check the result at any time:
 
 ```bash
-./setup.sh default
+./start.sh check
 ```
 
-To change profiles after setup, remove `.geneformer-workspace` and run setup
-again. Keep any notebooks or results you want before doing so.
+The report should contain values similar to:
+
+```json
+{
+  "machine": "aarch64",
+  "torch_cuda_version": "13.0",
+  "cuda_available": true,
+  "cuda_self_test": true,
+  "gpu": "NVIDIA GB10"
+}
+```
+
+Keep DGX OS and the NVIDIA driver updated through the vendor-supported update
+path. Partner appliance releases may not arrive on exactly the same date.
+
+## Override automatic hardware selection
+
+Automatic detection is recommended. Profiles can also be selected explicitly:
+
+```bash
+./setup.sh cu130    # Linux with a CUDA 13-compatible NVIDIA driver
+./setup.sh cpu      # CPU-only PyTorch
+./setup.sh default  # portable PyPI resolution
+```
+
+To change profiles after setup, preserve any notebooks or results you need,
+remove `.geneformer-workspace`, and run setup again.
 
 ## Choose a model
 
 The optional second setup argument chooses the checkpoint:
 
 ```bash
-./setup.sh cpu v2-104m   # default
-./setup.sh cpu v2-316m
-./setup.sh cpu v1-10m
+./setup.sh auto v2-104m   # default
+./setup.sh auto v2-316m
+./setup.sh auto v1-10m
 ```
 
 Available choices are `v2-104m`, `v2-316m`, `v1-10m`, `none`, and `all`.
@@ -151,7 +182,10 @@ analysis name:
 
 It refuses to overwrite an existing analysis or silently change an existing
 Geneformer checkout. The exact upstream revision is saved in
-`.geneformer-commit` and Python packages are pinned in `uv.lock`.
+`.geneformer-commit` and Python packages are pinned in `uv.lock`. A newly
+created analysis is cleaned up if its environment build fails, instead of
+appearing complete on the next run. The template also constrains
+Transformers to the 4.x API used by the pinned Geneformer source.
 
 ## Documentation
 

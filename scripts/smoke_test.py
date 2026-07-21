@@ -44,10 +44,20 @@ def geneformer_commit(geneformer_root: Path) -> str:
 
 
 def find_models(geneformer_root: Path) -> list[str]:
+    def has_downloaded_weights(model_directory: Path) -> bool:
+        weight_names = ("model.safetensors", "pytorch_model.bin")
+        return any(
+            weight.is_file() and weight.stat().st_size > 1024
+            for name in weight_names
+            if (weight := model_directory / name)
+        )
+
     return sorted(
         path.name
         for path in geneformer_root.glob("Geneformer-*")
-        if path.is_dir() and (path / "config.json").is_file()
+        if path.is_dir()
+        and (path / "config.json").is_file()
+        and has_downloaded_weights(path)
     )
 
 
@@ -55,6 +65,11 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--geneformer-root", type=Path, required=True)
     parser.add_argument("--json", type=Path, help="Optional environment report output")
+    parser.add_argument(
+        "--require-cuda",
+        action="store_true",
+        help="Fail unless PyTorch can execute a basic CUDA operation",
+    )
     args = parser.parse_args()
 
     geneformer_root = args.geneformer_root.resolve()
@@ -68,6 +83,15 @@ def main() -> None:
     import torch
     import transformers  # noqa: F401
 
+    cuda_available = torch.cuda.is_available()
+    cuda_self_test = None
+    if cuda_available:
+        cuda_self_test = (torch.ones(1, device="cuda") * 2).item() == 2
+    if args.require_cuda and not cuda_available:
+        raise SystemExit("CUDA profile installed, but PyTorch cannot access the NVIDIA GPU.")
+    if args.require_cuda and not cuda_self_test:
+        raise SystemExit("CUDA profile installed, but the CUDA tensor self-test failed.")
+
     model_dirs = find_models(geneformer_root)
     report = {
         "python": sys.version.replace("\n", " "),
@@ -78,8 +102,9 @@ def main() -> None:
         "model_directories": model_dirs,
         "packages": package_versions(),
         "torch_cuda_version": torch.version.cuda,
-        "cuda_available": torch.cuda.is_available(),
-        "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
+        "cuda_available": cuda_available,
+        "cuda_self_test": cuda_self_test,
+        "gpu": torch.cuda.get_device_name(0) if cuda_available else None,
     }
     rendered = json.dumps(report, indent=2)
     print(rendered)
@@ -88,7 +113,7 @@ def main() -> None:
         args.json.write_text(rendered + "\n", encoding="utf-8")
 
     if not model_dirs:
-        print("WARNING: no Geneformer model directory with config.json was found.")
+        print("WARNING: no Geneformer model directory with downloaded weights was found.")
     print("Geneformer environment smoke test passed")
 
 

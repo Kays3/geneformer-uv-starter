@@ -23,3 +23,4 @@ jobs:
       - run: ./scripts/bootstrap_workspace.sh --help
       - run: ./setup.sh --help
       - run: ./start.sh --help
+      - run: test "$(./setup.sh invalid >/dev/null 2>&1; echo $?)" -eq 2

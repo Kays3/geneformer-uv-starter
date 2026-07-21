@@ -118,6 +118,14 @@ if [[ -e "$analysis_root" ]]; then
   exit 1
 fi
 
+analysis_created=true
+cleanup_failed_analysis() {
+  if [[ "$analysis_created" == true && -d "$analysis_root" ]]; then
+    rm -rf -- "$analysis_root"
+  fi
+}
+trap cleanup_failed_analysis EXIT
+
 mkdir -p \
   "$analysis_root/scripts" \
   "$analysis_root/notebooks" \
@@ -136,7 +144,14 @@ git -C "$geneformer_root" rev-parse HEAD > "$analysis_root/.geneformer-commit"
 cd "$analysis_root"
 uv lock
 uv sync --locked
-uv run --locked python scripts/smoke_test.py --geneformer-root "$geneformer_root"
+smoke_arguments=(--geneformer-root "$geneformer_root")
+if [[ "$profile" == "cu130" ]]; then
+  smoke_arguments+=(--require-cuda)
+fi
+uv run --locked python scripts/smoke_test.py "${smoke_arguments[@]}"
+
+analysis_created=false
+trap - EXIT
 
 echo "Created Geneformer analysis at $analysis_root"
 echo "Commit pyproject.toml, uv.lock, .python-version, and .geneformer-commit."
