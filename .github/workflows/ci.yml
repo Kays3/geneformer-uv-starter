@@ -19,4 +19,7 @@ jobs:
       - run: uv run --locked ruff check .
       - run: uv run --locked pytest
       - run: bash -n scripts/bootstrap_workspace.sh
+      - run: bash -n setup.sh start.sh
       - run: ./scripts/bootstrap_workspace.sh --help
+      - run: ./setup.sh --help
+      - run: ./start.sh --help

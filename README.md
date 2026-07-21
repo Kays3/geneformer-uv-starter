@@ -1,145 +1,166 @@
 # Geneformer + uv starter
 
-A small, reproducible starter for running [Geneformer](https://huggingface.co/ctheodoris/Geneformer)
-with [uv](https://docs.astral.sh/uv/). It creates an independent analysis project,
-pins the Geneformer source revision, selects a CPU or PyTorch profile, and checks
-the resulting environment.
+Clone this repository, run one setup command, and start Geneformer in
+JupyterLab. The environment is isolated and reproducible with
+[uv](https://docs.astral.sh/uv/).
 
-This repository is a community setup helper. It is not affiliated with or
-endorsed by the Geneformer authors.
+This is a community setup helper. It is not affiliated with or endorsed by the
+Geneformer authors.
 
 ## Quick start
 
-Install the system prerequisites:
+### 1. Install the two prerequisites
 
-- Git and [Git LFS](https://git-lfs.com/)
-- [uv](https://docs.astral.sh/uv/getting-started/installation/)
-- an NVIDIA driver if you want GPU acceleration
+You need [Git LFS](https://git-lfs.com/) and
+[uv](https://docs.astral.sh/uv/getting-started/installation/).
 
-On Ubuntu or Debian:
+Ubuntu or Debian:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y build-essential git git-lfs libhdf5-dev pkg-config
-git lfs install
+sudo apt-get install -y git git-lfs
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Then clone this repository and create an analysis:
+macOS with Homebrew:
+
+```bash
+brew install git git-lfs uv
+```
+
+### 2. Clone and set up
 
 ```bash
 git clone https://github.com/Kays3/geneformer-uv-starter.git
 cd geneformer-uv-starter
-
-./scripts/bootstrap_workspace.sh \
-  "$HOME/geneformer-workspace" \
-  my-analysis \
-  default
+./setup.sh
 ```
 
-The default downloads the Geneformer V2 104M checkpoint and matching V2 gene
-dictionaries. It does not download every checkpoint in the upstream repository.
+The first setup downloads Geneformer V2 104M and installs its Python
+environment. It can take several minutes. CPU mode is used by default so the
+setup works without an NVIDIA GPU.
 
-Start working:
+### 3. Start Geneformer
 
 ```bash
-cd "$HOME/geneformer-workspace/my-analysis"
-uv run --locked python scripts/smoke_test.py --geneformer-root ../Geneformer
-uv run --locked jupyter lab
+./start.sh
 ```
 
-## Bootstrap options
+JupyterLab will print a local URL and normally open it in your browser. Put
+notebooks in the `notebooks` directory shown by JupyterLab.
+
+To verify the environment without starting JupyterLab:
+
+```bash
+./start.sh check
+```
+
+## GPU setup
+
+If your NVIDIA driver supports CUDA 13.0 PyTorch wheels, select the GPU profile:
+
+```bash
+./setup.sh cu130
+./start.sh
+```
+
+The portable PyPI profile is also available:
+
+```bash
+./setup.sh default
+```
+
+To change profiles after setup, remove `.geneformer-workspace` and run setup
+again. Keep any notebooks or results you want before doing so.
+
+## Choose a model
+
+The optional second setup argument chooses the checkpoint:
+
+```bash
+./setup.sh cpu v2-104m   # default
+./setup.sh cpu v2-316m
+./setup.sh cpu v1-10m
+```
+
+Available choices are `v2-104m`, `v2-316m`, `v1-10m`, `none`, and `all`.
+The `all` option downloads every upstream Git LFS asset and can be very large.
+
+## Where everything is stored
+
+Setup creates this ignored local workspace:
 
 ```text
-bootstrap_workspace.sh WORKSPACE_ROOT ANALYSIS_NAME PROFILE [GENEFORMER_REF] [MODEL]
+.geneformer-workspace/
+├── Geneformer/     # pinned upstream code, dictionaries, and model
+└── analysis/
+    ├── configs/
+    ├── notebooks/
+    ├── results/
+    ├── scripts/
+    ├── pyproject.toml
+    └── uv.lock
 ```
 
-Profiles:
+Your data and generated files are not committed to this starter repository.
+For durable work, initialize a separate Git repository inside `analysis` or
+copy the generated analysis directory to its own project.
 
-| Profile | PyTorch source | Intended use |
-|---|---|---|
-| `default` | PyPI | Portable default; lets uv choose compatible wheels |
-| `cpu` | PyTorch CPU index | Machines without an NVIDIA GPU |
-| `cu130` | PyTorch CUDA 13.0 index | Systems whose driver supports CUDA 13 wheels |
+## Use Geneformer from Python
 
-Model choices:
+Inside a notebook or script:
 
-| Model | Downloaded LFS assets |
-|---|---|
-| `v2-104m` | V2 dictionaries and Geneformer V2 104M (default) |
-| `v2-316m` | V2 dictionaries and Geneformer V2 316M |
-| `v1-10m` | V1 dictionaries and Geneformer V1 10M |
-| `none` | Source only; useful for environment development |
-| `all` | Every upstream Git LFS asset; potentially very large |
+```python
+from geneformer import EmbExtractor, TranscriptomeTokenizer
 
-The default source revision is pinned in the bootstrap script. Override it with
-a branch, tag, or commit:
+print("Geneformer is ready")
+```
+
+The model directory is available at:
+
+```python
+from pathlib import Path
+
+model_directory = Path("../Geneformer/Geneformer-V2-104M")
+```
+
+Refer to the official examples for tokenization, embedding extraction,
+fine-tuning, classification, and in silico perturbation.
+
+## Important data notes
+
+- Geneformer expects human transcriptomic data with Ensembl gene identifiers.
+- Match the V1 or V2 dictionaries to the selected model.
+- Keep donors separated between training and evaluation datasets.
+- Try a small tokenization and forward pass before starting a long job.
+- GPU resources are recommended for efficient model use and fine-tuning.
+
+## Advanced bootstrap command
+
+The detailed bootstrap remains available when you want a custom workspace or
+analysis name:
 
 ```bash
 ./scripts/bootstrap_workspace.sh \
-  "$HOME/geneformer-workspace" \
-  cpu-analysis \
+  /path/to/workspace \
+  my-analysis \
   cpu \
   04c2b2e84da7c0f385c3f9ad8f3ec24bab6650e5 \
   v2-104m
 ```
 
-The command refuses to overwrite an analysis or change an existing Geneformer
-checkout. This protects research code and makes the recorded revision meaningful.
+It refuses to overwrite an existing analysis or silently change an existing
+Geneformer checkout. The exact upstream revision is saved in
+`.geneformer-commit` and Python packages are pinned in `uv.lock`.
 
-## Created layout
-
-```text
-geneformer-workspace/
-├── Geneformer/                 # clean, pinned upstream checkout
-└── my-analysis/                # your independent Git-ready project
-    ├── .geneformer-commit
-    ├── .python-version
-    ├── pyproject.toml
-    ├── uv.lock
-    ├── configs/
-    ├── notebooks/
-    ├── results/
-    └── scripts/
-```
-
-Geneformer is installed as an editable relative dependency. Keep the two
-directories adjacent, or update the source path in `pyproject.toml`.
-
-## Before a real analysis
-
-- Use raw counts with human Ensembl gene identifiers and document whether they
-  are stored in `X` or a layer.
-- Keep donor-level train/evaluation/test splits disjoint for supervised tasks.
-- Match V1/V2 dictionaries, vocabulary, input size, and model checkpoint.
-- Keep private data, credentials, and large generated checkpoints out of Git.
-- Run a tiny tokenization and forward-pass test before a long job.
-- Tune fine-tuning hyperparameters for the downstream task; there is no universal
-  Geneformer configuration.
-
-Efficient Geneformer use generally requires a GPU. CPU mode is still useful for
-installation checks, data preparation, and small experiments.
-
-## Reproduce an existing analysis
-
-Clone the analysis next to Geneformer checked out at the SHA stored in
-`.geneformer-commit`, then run:
-
-```bash
-uv sync --frozen
-uv run --frozen python scripts/smoke_test.py --geneformer-root ../Geneformer
-```
-
-Commit `uv.lock`; uv uses it to recreate the exact resolved Python environment.
-
-## Upstream documentation
+## Documentation
 
 - [Geneformer getting started](https://geneformer.readthedocs.io/en/latest/getstarted.html)
 - [Geneformer model repository](https://huggingface.co/ctheodoris/Geneformer)
+- [Geneformer examples](https://huggingface.co/ctheodoris/Geneformer/tree/main/examples)
 - [uv project guide](https://docs.astral.sh/uv/guides/projects/)
-- [uv locking and syncing](https://docs.astral.sh/uv/concepts/projects/sync/)
 
 ## License
 
-The setup helper is released under the MIT License. Geneformer and its model
+This setup helper is released under the MIT License. Geneformer and its model
 assets are separate upstream works under their own license and terms.
