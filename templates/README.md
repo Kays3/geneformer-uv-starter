@@ -6,9 +6,9 @@ dependency. Its exact upstream revision is recorded in `.geneformer-commit`.
 ## Start
 
 ```bash
-uv sync --frozen
-uv run --frozen python scripts/smoke_test.py --geneformer-root ../Geneformer
-uv run --frozen jupyter lab
+uv sync --frozen --managed-python
+uv run --frozen --managed-python python scripts/smoke_test.py --geneformer-root ../Geneformer
+uv run --frozen --managed-python jupyter lab
 ```
 
 Place scripts in `scripts/`, notebooks in `notebooks/`, configuration in

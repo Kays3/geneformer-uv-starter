@@ -51,6 +51,11 @@ for required_command in git git-lfs uv; do
   }
 done
 
+# Some DGX OS partner images include the Python runtime without development
+# headers. Geneformer's tdigest dependency builds a small C extension, so use a
+# uv-managed CPython distribution that includes Python.h on every platform.
+uv python install 3.12 --no-bin
+
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 setup_root="$(cd "$script_dir/.." && pwd)"
 template_dir="$setup_root/templates"
@@ -142,13 +147,13 @@ chmod +x "$analysis_root/scripts/analysis.py" "$analysis_root/scripts/smoke_test
 git -C "$geneformer_root" rev-parse HEAD > "$analysis_root/.geneformer-commit"
 
 cd "$analysis_root"
-uv lock
-uv sync --locked
+uv lock --managed-python
+uv sync --locked --managed-python
 smoke_arguments=(--geneformer-root "$geneformer_root")
 if [[ "$profile" == "cu130" ]]; then
   smoke_arguments+=(--require-cuda)
 fi
-uv run --locked python scripts/smoke_test.py "${smoke_arguments[@]}"
+uv run --locked --managed-python python scripts/smoke_test.py "${smoke_arguments[@]}"
 
 analysis_created=false
 trap - EXIT

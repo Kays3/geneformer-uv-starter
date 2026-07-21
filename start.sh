@@ -21,9 +21,9 @@ fi
 cd "$analysis_root"
 
 if [[ "${1:-lab}" == "check" ]]; then
-  exec uv run --locked python scripts/smoke_test.py \
+  exec uv run --locked --managed-python python scripts/smoke_test.py \
     --geneformer-root ../Geneformer
 fi
 
 echo "Starting JupyterLab. Stop it with Ctrl+C."
-exec uv run --locked jupyter lab
+exec uv run --locked --managed-python jupyter lab

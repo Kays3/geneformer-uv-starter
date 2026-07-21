@@ -39,7 +39,9 @@ cd geneformer-uv-starter
 
 The first setup downloads Geneformer V2 104M and installs its Python
 environment. It can take several minutes. Setup automatically selects CUDA
-13.0 on a GB10 ARM64 appliance and CPU mode on other systems.
+13.0 on a GB10 ARM64 appliance and CPU mode on other systems. It also installs
+a private uv-managed Python 3.12 with the C headers required by Geneformer's
+dependencies; the operating system Python is not modified.
 
 ### 3. Start Geneformer
 
@@ -186,6 +188,14 @@ Geneformer checkout. The exact upstream revision is saved in
 created analysis is cleaned up if its environment build fails, instead of
 appearing complete on the next run. The template also constrains
 Transformers to the 4.x API used by the pinned Geneformer source.
+
+### Missing `Python.h`
+
+Older revisions of this starter could select the system Python on some DGX OS
+partner images. Those images may omit `python3.12-dev`, causing
+`accumulation-tree` to fail with `fatal error: Python.h: No such file or
+directory`. Current setup avoids that OS-specific dependency by requiring a
+uv-managed Python distribution that includes the headers.
 
 ## Documentation
 
