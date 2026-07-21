@@ -97,8 +97,21 @@ import torch
 from tqdm.auto import tqdm
 
 SEED = 42
-PROJECT_DIR = Path.cwd()
-GENEFORMER_ROOT = (PROJECT_DIR / "../Geneformer").resolve()
+
+
+def find_project_directory(start: Path) -> Path:
+    for candidate in (start.resolve(), *start.resolve().parents):
+        has_project = (candidate / "pyproject.toml").is_file()
+        has_geneformer = (candidate.parent / "Geneformer").is_dir()
+        if has_project and has_geneformer:
+            return candidate
+    raise FileNotFoundError(
+        "Could not locate the generated analysis. Start JupyterLab with ./start.sh."
+    )
+
+
+PROJECT_DIR = find_project_directory(Path.cwd())
+GENEFORMER_ROOT = (PROJECT_DIR.parent / "Geneformer").resolve()
 MODEL_DIR = GENEFORMER_ROOT / "Geneformer-V2-104M"
 DATA_DIR = PROJECT_DIR / "data" / "nsclc"
 DATA_FILE = DATA_DIR / "nsclc_integrated.h5ad"
@@ -506,6 +519,7 @@ for split_name, split_donors in split_by_donor.items():
     notebook = {
         "cells": cells,
         "metadata": {
+            "geneformer_uv_starter": {"tutorial_version": "1.1"},
             "kernelspec": {
                 "display_name": "Python 3 (ipykernel)",
                 "language": "python",

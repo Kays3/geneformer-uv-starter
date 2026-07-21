@@ -63,7 +63,9 @@ To verify the environment without starting JupyterLab:
 
 If you installed an earlier release, pull and rerun setup. It updates the
 environment in place, adds `ipywidgets` to remove the `IProgress not found`
-warning, and installs the tutorial without overwriting an existing copy:
+warning, and refreshes the distributed tutorial. If the installed tutorial was
+changed, setup first preserves it as
+`01_stage1_cell_type_tutorial.user-backup.ipynb`:
 
 ```bash
 git pull

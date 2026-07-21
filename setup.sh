@@ -50,10 +50,14 @@ fi
 if [[ -d "$analysis_root" ]]; then
   echo "Updating the existing Geneformer starter environment..."
   mkdir -p "$analysis_root/notebooks"
-  if [[ ! -e "$analysis_root/notebooks/01_stage1_cell_type_tutorial.ipynb" ]]; then
-    cp "$repository_root/notebooks/01_stage1_cell_type_tutorial.ipynb" \
-      "$analysis_root/notebooks/01_stage1_cell_type_tutorial.ipynb"
+  tutorial_source="$repository_root/notebooks/01_stage1_cell_type_tutorial.ipynb"
+  tutorial_target="$analysis_root/notebooks/01_stage1_cell_type_tutorial.ipynb"
+  tutorial_backup="$analysis_root/notebooks/01_stage1_cell_type_tutorial.user-backup.ipynb"
+  if [[ -e "$tutorial_target" ]] && ! cmp -s "$tutorial_source" "$tutorial_target"; then
+    cp "$tutorial_target" "$tutorial_backup"
+    echo "Preserved the previous tutorial as $(basename "$tutorial_backup")."
   fi
+  cp "$tutorial_source" "$tutorial_target"
   cp "$repository_root/scripts/smoke_test.py" "$analysis_root/scripts/smoke_test.py"
   if ! grep -q 'ipywidgets' "$analysis_root/pyproject.toml"; then
     (
