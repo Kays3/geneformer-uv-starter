@@ -52,7 +52,7 @@ def test_tutorial_discovers_analysis_from_both_launch_directories(tmp_path: Path
         namespace,
     )
 
-    workspace = tmp_path / ".geneformer-workspace"
+    workspace = tmp_path / "geneformer-workspace"
     analysis = workspace / "analysis"
     notebooks = analysis / "notebooks"
     notebooks.mkdir(parents=True)

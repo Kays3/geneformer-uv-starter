@@ -14,8 +14,29 @@ fi
 requested_profile="${1:-auto}"
 model="${2:-v2-104m}"
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-workspace_root="$repository_root/.geneformer-workspace"
+legacy_workspace_root="$repository_root/.geneformer-workspace"
+workspace_root="$repository_root/geneformer-workspace"
 analysis_root="$workspace_root/analysis"
+
+if [[ -d "$legacy_workspace_root" ]]; then
+  if [[ -e "$workspace_root" ]]; then
+    echo "Both legacy and visible Geneformer workspaces exist:" >&2
+    echo "  $legacy_workspace_root" >&2
+    echo "  $workspace_root" >&2
+    echo "Preserve the workspace you need, remove the other, then rerun setup." >&2
+    exit 1
+  fi
+  if ! command -v uv >/dev/null 2>&1; then
+    echo "uv is required to migrate the existing Geneformer environment." >&2
+    exit 1
+  fi
+  mv -- "$legacy_workspace_root" "$workspace_root"
+  if [[ -d "$analysis_root/.venv" ]]; then
+    rm -rf -- "$analysis_root/.venv"
+  fi
+  echo "Moved the existing workspace to visible directory: $workspace_root"
+  echo "Models and datasets were preserved; rebuilding only the Python environment."
+fi
 
 case "$requested_profile" in
   auto)
@@ -114,6 +135,9 @@ echo "Setting up Geneformer (profile=$profile, model=$model, architecture=$(unam
 cat <<'EOF'
 
 Setup complete.
+
+Visible workspace:
+  geneformer-workspace/
 
 Next step:
   ./start.sh

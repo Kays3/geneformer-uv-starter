@@ -5,3 +5,4 @@ __pycache__/
 *.py[cod]
 dist/
 .geneformer-workspace/
+geneformer-workspace/

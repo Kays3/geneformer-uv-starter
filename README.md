@@ -41,7 +41,9 @@ The first setup downloads Geneformer V2 104M and installs its Python
 environment. It can take several minutes. Setup automatically selects CUDA
 13.0 on a GB10 ARM64 appliance and CPU mode on other systems. It also installs
 a private uv-managed Python 3.12 with the C headers required by Geneformer's
-dependencies; the operating system Python is not modified.
+dependencies; the operating system Python is not modified. Models, datasets,
+notebooks, and results are stored in the visible `geneformer-workspace/`
+directory.
 
 ### 3. Start Geneformer
 
@@ -119,7 +121,7 @@ Automatic detection is recommended. Profiles can also be selected explicitly:
 ```
 
 To change profiles after setup, preserve any notebooks or results you need,
-remove `.geneformer-workspace`, and run setup again.
+remove `geneformer-workspace`, and run setup again.
 
 ## Choose a model
 
@@ -152,13 +154,16 @@ institutional or Google Drive mirror instead.
 
 ## Where everything is stored
 
-Setup creates this ignored local workspace:
+Setup creates this visible, Git-ignored local workspace:
 
 ```text
-.geneformer-workspace/
-├── Geneformer/     # pinned upstream code, dictionaries, and model
+geneformer-workspace/
+├── Geneformer/
+│   └── Geneformer-V2-104M/  # downloaded model
 └── analysis/
     ├── configs/
+    ├── data/                 # downloaded tutorial datasets
+    ├── input_data/
     ├── notebooks/
     ├── results/
     ├── scripts/
@@ -169,6 +174,11 @@ Setup creates this ignored local workspace:
 Your data and generated files are not committed to this starter repository.
 For durable work, initialize a separate Git repository inside `analysis` or
 copy the generated analysis directory to its own project.
+
+Stop JupyterLab before updating. Installations created by older releases are
+moved automatically from `.geneformer-workspace/` to `geneformer-workspace/`
+the next time `./setup.sh` runs. Existing models and datasets are moved in
+place and are not downloaded again.
 
 ## Use Geneformer from Python
 

@@ -11,9 +11,13 @@ EOF
 fi
 
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-analysis_root="$repository_root/.geneformer-workspace/analysis"
+analysis_root="$repository_root/geneformer-workspace/analysis"
 
 if [[ ! -f "$analysis_root/uv.lock" ]]; then
+  if [[ -d "$repository_root/.geneformer-workspace" ]]; then
+    echo "Run ./setup.sh once to move the legacy hidden workspace to geneformer-workspace/." >&2
+    exit 1
+  fi
   echo "Geneformer is not set up yet. Run ./setup.sh first." >&2
   exit 1
 fi
