@@ -48,8 +48,25 @@ if [[ "$profile" == "cu130" ]]; then
 fi
 
 if [[ -d "$analysis_root" ]]; then
-  echo "Geneformer is already set up."
-  echo "Run ./start.sh to open JupyterLab."
+  echo "Updating the existing Geneformer starter environment..."
+  mkdir -p "$analysis_root/notebooks"
+  if [[ ! -e "$analysis_root/notebooks/01_stage1_cell_type_tutorial.ipynb" ]]; then
+    cp "$repository_root/notebooks/01_stage1_cell_type_tutorial.ipynb" \
+      "$analysis_root/notebooks/01_stage1_cell_type_tutorial.ipynb"
+  fi
+  cp "$repository_root/scripts/smoke_test.py" "$analysis_root/scripts/smoke_test.py"
+  if ! grep -q 'ipywidgets' "$analysis_root/pyproject.toml"; then
+    (
+      cd "$analysis_root"
+      uv add --managed-python 'ipywidgets>=8.1.8'
+    )
+  else
+    (
+      cd "$analysis_root"
+      uv sync --locked --managed-python
+    )
+  fi
+  echo "Geneformer is up to date. Run ./start.sh to open JupyterLab."
   exit 0
 fi
 

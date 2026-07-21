@@ -142,6 +142,7 @@ cp "$template_dir/README.md" "$analysis_root/README.md"
 cp "$template_dir/pyproject.$profile.toml" "$analysis_root/pyproject.toml"
 cp "$template_dir/analysis.py" "$analysis_root/scripts/analysis.py"
 cp "$setup_root/scripts/smoke_test.py" "$analysis_root/scripts/smoke_test.py"
+cp -R "$setup_root/notebooks/." "$analysis_root/notebooks/"
 chmod +x "$analysis_root/scripts/analysis.py" "$analysis_root/scripts/smoke_test.py"
 
 git -C "$geneformer_root" rev-parse HEAD > "$analysis_root/.geneformer-commit"

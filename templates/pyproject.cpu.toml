@@ -7,6 +7,7 @@ requires-python = ">=3.10,<3.13"
 dependencies = [
   "geneformer",
   "ipykernel",
+  "ipywidgets>=8.1.8",
   "jupyterlab",
   "torch",
   "transformers>=4.46,<5",

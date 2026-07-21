@@ -50,12 +50,24 @@ dependencies; the operating system Python is not modified.
 ```
 
 JupyterLab will print a local URL and normally open it in your browser. Put
-notebooks in the `notebooks` directory shown by JupyterLab.
+notebooks in the `notebooks` directory shown by JupyterLab. A runnable
+`01_stage1_cell_type_tutorial.ipynb` is preloaded; it adapts the nine-class
+Stage 1 cell-type model from
+[`Kays3/geneformer-nsclc`](https://github.com/Kays3/geneformer-nsclc).
 
 To verify the environment without starting JupyterLab:
 
 ```bash
 ./start.sh check
+```
+
+If you installed an earlier release, pull and rerun setup. It updates the
+environment in place, adds `ipywidgets` to remove the `IProgress not found`
+warning, and installs the tutorial without overwriting an existing copy:
+
+```bash
+git pull
+./setup.sh
 ```
 
 ## ASUS Ascent GX10 and Lenovo ThinkStation PGX
@@ -118,6 +130,22 @@ The optional second setup argument chooses the checkpoint:
 
 Available choices are `v2-104m`, `v2-316m`, `v1-10m`, `none`, and `all`.
 The `all` option downloads every upstream Git LFS asset and can be very large.
+
+## Stage 1 tutorial dataset
+
+The preloaded tutorial downloads the original 12.9 GB NSCLC atlas directly
+from the public CZ CELLxGENE source used by the archived workflow. It validates
+the byte count before using the file and offers an optional SHA-256 pass.
+
+- [CELLxGENE collection](https://cellxgene.cziscience.com/collections/edb893ee-4066-4128-9aec-5eb2b03f8287)
+- [Direct H5AD download](https://datasets.cellxgene.cziscience.com/46e0287b-9a33-4e83-99f3-8c044131bfdc.h5ad)
+- Expected bytes: `12,897,440,967`
+- SHA-256: `141db65b76b1e34f895131e36c74cd829db05fc037f8cd2f422c2960a5a266cd`
+
+The machine-readable record is in
+[`datasets/nsclc_integrated.manifest.json`](datasets/nsclc_integrated.manifest.json).
+Set `GENEFORMER_DATA_URL` before starting JupyterLab to use a byte-identical
+institutional or Google Drive mirror instead.
 
 ## Where everything is stored
 
