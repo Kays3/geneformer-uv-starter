@@ -811,6 +811,9 @@ else:
             """
 ## Next steps
 
+The validated frozen-embedding baseline is published with tables and figures
+in the [GitHub results report](https://github.com/Kays3/geneformer-uv-starter/blob/main/docs/results/lung-allograft/README.md).
+
 - Repeat the comparison across donor-level cross-validation folds.
 - Add bootstrap confidence intervals where the resampling unit is the donor,
   not the cell.

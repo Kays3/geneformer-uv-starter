@@ -190,6 +190,11 @@ The machine-readable record is in
 [`datasets/lung_allograft.manifest.json`](datasets/lung_allograft.manifest.json).
 Set `LUNG_ALLOGRAFT_DATA_URL` to use a byte-identical institutional mirror.
 
+See the published **[lung allograft results report](docs/results/lung-allograft/README.md)**
+for held-out classification tables, the normalized confusion-matrix heatmap,
+and the pretrained cell-embedding UMAP. Fine-tuned results are clearly marked
+as pending until the opt-in training run is completed.
+
 ## Where everything is stored
 
 Setup creates this visible, Git-ignored local workspace:
