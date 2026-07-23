@@ -8,6 +8,21 @@ automatically and use their NVIDIA GB10 GPU. The environment is isolated and rep
 This is a community setup helper. It is not affiliated with or endorsed by the
 Geneformer authors.
 
+## New machine? Start here
+
+If the computer is not set up yet, follow the complete
+**[machine setup tutorial](docs/machine-setup.md)**. It covers:
+
+- connecting the monitor, keyboard, mouse, and power, then joining Wi-Fi;
+- completing Ubuntu first boot and installing operating-system updates;
+- safely verifying or updating NVIDIA GPU drivers;
+- special guidance for ASUS Ascent GX10 and Lenovo ThinkStation PGX systems;
+- installing this repository and testing that PyTorch can use the GPU; and
+- routine updates and troubleshooting.
+
+If Ubuntu is already current and `nvidia-smi` works, continue with the quick
+start below.
+
 ## Quick start
 
 ### 1. Install the two prerequisites
@@ -19,7 +34,7 @@ Ubuntu or Debian:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y git git-lfs
+sudo apt-get install -y git git-lfs curl
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
@@ -180,27 +195,6 @@ moved automatically from `.geneformer-workspace/` to `geneformer-workspace/`
 the next time `./setup.sh` runs. Existing models and datasets are moved in
 place and are not downloaded again.
 
-## Use Geneformer from Python
-
-Inside a notebook or script:
-
-```python
-from geneformer import EmbExtractor, TranscriptomeTokenizer
-
-print("Geneformer is ready")
-```
-
-The model directory is available at:
-
-```python
-from pathlib import Path
-
-model_directory = Path("../Geneformer/Geneformer-V2-104M")
-```
-
-Refer to the official examples for tokenization, embedding extraction,
-fine-tuning, classification, and in silico perturbation.
-
 ## Important data notes
 
 - Geneformer expects human transcriptomic data with Ensembl gene identifiers.
@@ -208,27 +202,6 @@ fine-tuning, classification, and in silico perturbation.
 - Keep donors separated between training and evaluation datasets.
 - Try a small tokenization and forward pass before starting a long job.
 - GPU resources are recommended for efficient model use and fine-tuning.
-
-## Advanced bootstrap command
-
-The detailed bootstrap remains available when you want a custom workspace or
-analysis name:
-
-```bash
-./scripts/bootstrap_workspace.sh \
-  /path/to/workspace \
-  my-analysis \
-  cpu \
-  04c2b2e84da7c0f385c3f9ad8f3ec24bab6650e5 \
-  v2-104m
-```
-
-It refuses to overwrite an existing analysis or silently change an existing
-Geneformer checkout. The exact upstream revision is saved in
-`.geneformer-commit` and Python packages are pinned in `uv.lock`. A newly
-created analysis is cleaned up if its environment build fails, instead of
-appearing complete on the next run. The template also constrains
-Transformers to the 4.x API used by the pinned Geneformer source.
 
 ### Missing `Python.h`
 

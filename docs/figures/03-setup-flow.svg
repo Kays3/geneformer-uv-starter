@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="300" viewBox="0 0 1100 300" role="img" aria-labelledby="title desc">
+  <title id="title">Complete machine setup flow</title>
+  <desc id="desc">The sequence is cables, Wi-Fi, Ubuntu updates, NVIDIA driver check, repository setup, GPU test, and JupyterLab.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#475569"/></marker></defs>
+  <rect width="1100" height="300" rx="20" fill="#f8fafc"/>
+  <text x="550" y="42" text-anchor="middle" font-family="sans-serif" font-size="25" font-weight="700" fill="#0f172a">From the box to a working Geneformer notebook</text>
+  <g font-family="sans-serif" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">
+    <g transform="translate(25,92)"><rect width="125" height="90" rx="14" fill="#e0e7ff" stroke="#6366f1" stroke-width="3"/><text x="62" y="42">Connect</text><text x="62" y="67">cables</text></g>
+    <g transform="translate(180,92)"><rect width="125" height="90" rx="14" fill="#dcfce7" stroke="#16a34a" stroke-width="3"/><text x="62" y="42">Connect</text><text x="62" y="67">Wi-Fi</text></g>
+    <g transform="translate(335,92)"><rect width="125" height="90" rx="14" fill="#fef3c7" stroke="#d97706" stroke-width="3"/><text x="62" y="42">Update</text><text x="62" y="67">Ubuntu</text></g>
+    <g transform="translate(490,92)"><rect width="125" height="90" rx="14" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/><text x="62" y="42">Check</text><text x="62" y="67">NVIDIA</text></g>
+    <g transform="translate(645,92)"><rect width="125" height="90" rx="14" fill="#e0e7ff" stroke="#6366f1" stroke-width="3"/><text x="62" y="42">Run</text><text x="62" y="67">setup.sh</text></g>
+    <g transform="translate(800,92)"><rect width="125" height="90" rx="14" fill="#dcfce7" stroke="#16a34a" stroke-width="3"/><text x="62" y="42">GPU</text><text x="62" y="67">self-test</text></g>
+    <g transform="translate(955,92)"><rect width="120" height="90" rx="14" fill="#f3e8ff" stroke="#9333ea" stroke-width="3"/><text x="60" y="42">Open</text><text x="60" y="67">Jupyter</text></g>
+  </g>
+  <g stroke="#475569" stroke-width="4" marker-end="url(#arrow)"><line x1="152" y1="137" x2="172" y2="137"/><line x1="307" y1="137" x2="327" y2="137"/><line x1="462" y1="137" x2="482" y2="137"/><line x1="617" y1="137" x2="637" y2="137"/><line x1="772" y1="137" x2="792" y2="137"/><line x1="927" y1="137" x2="947" y2="137"/></g>
+  <path d="M552 190 V225 H862 V190" fill="none" stroke="#dc2626" stroke-width="3" stroke-dasharray="8 6"/>
+  <text x="707" y="254" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="700" fill="#b91c1c">Continue only when nvidia-smi works</text>
+</svg>
