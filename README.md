@@ -17,6 +17,7 @@ If the computer is not set up yet, follow the complete
 - completing Ubuntu first boot and installing operating-system updates;
 - safely verifying or updating NVIDIA GPU drivers;
 - special guidance for ASUS Ascent GX10 and Lenovo ThinkStation PGX systems;
+- configuring tmux, RustDesk, and Tailscale for approved remote access;
 - installing this repository and testing that PyTorch can use the GPU; and
 - routine updates and troubleshooting.
 
@@ -71,6 +72,12 @@ notebooks in the `notebooks` directory shown by JupyterLab. A runnable
 `01_stage1_cell_type_tutorial.ipynb` is preloaded; it adapts the nine-class
 Stage 1 cell-type model from
 [`Kays3/geneformer-nsclc`](https://github.com/Kays3/geneformer-nsclc).
+
+The preloaded `02_lung_allograft_classification_tutorial.ipynb` downloads a
+1.18 GB public lung-allograft atlas and compares a frozen Geneformer embedding
+classifier with partial Geneformer fine-tuning. It produces donor-held-out
+classification reports, normalized confusion-matrix heatmaps, and cell
+embedding UMAPs.
 
 To verify the environment without starting JupyterLab:
 
@@ -166,6 +173,22 @@ The machine-readable record is in
 [`datasets/nsclc_integrated.manifest.json`](datasets/nsclc_integrated.manifest.json).
 Set `GENEFORMER_DATA_URL` before starting JupyterLab to use a byte-identical
 institutional or Google Drive mirror instead.
+
+## Lung allograft tutorial dataset
+
+The second tutorial uses the public CELLxGENE collection **Human Lung
+Allografts Experience Persistent Fibrogenic Shift Following Acute Cellular
+Rejection**. It validates the 1.18 GB asset size before use and offers an
+optional SHA-256 pass.
+
+- [CELLxGENE collection](https://cellxgene.cziscience.com/collections/e276e3e2-197a-4524-abd1-a753a48dc33a)
+- [Direct H5AD download](https://datasets.cellxgene.cziscience.com/af6e81be-e65c-4821-987e-e0eb6c8acd59.h5ad)
+- Expected bytes: `1,180,621,333`
+- SHA-256: `0648ce0268807301b5fe1b92955ed8e9d29c5f67812c6ed9ec3ed7da79e79b4c`
+
+The machine-readable record is in
+[`datasets/lung_allograft.manifest.json`](datasets/lung_allograft.manifest.json).
+Set `LUNG_ALLOGRAFT_DATA_URL` to use a byte-identical institutional mirror.
 
 ## Where everything is stored
 

@@ -6,6 +6,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 NOTEBOOK = ROOT / "notebooks" / "01_stage1_cell_type_tutorial.ipynb"
 MANIFEST = ROOT / "datasets" / "nsclc_integrated.manifest.json"
+ALLOGRAFT_NOTEBOOK = ROOT / "notebooks" / "02_lung_allograft_classification_tutorial.ipynb"
+ALLOGRAFT_MANIFEST = ROOT / "datasets" / "lung_allograft.manifest.json"
 
 
 def test_tutorial_notebook_is_valid_and_all_code_compiles() -> None:
@@ -62,3 +64,36 @@ def test_tutorial_discovers_analysis_from_both_launch_directories(tmp_path: Path
     find_project_directory = namespace["find_project_directory"]
     assert find_project_directory(analysis) == analysis
     assert find_project_directory(notebooks) == analysis
+
+
+def test_allograft_tutorial_is_valid_and_all_code_compiles() -> None:
+    notebook = json.loads(ALLOGRAFT_NOTEBOOK.read_text(encoding="utf-8"))
+
+    assert notebook["nbformat"] == 4
+    metadata = notebook["metadata"]["geneformer_uv_starter"]
+    assert metadata["tutorial_version"] == "1.0"
+    assert metadata["classification_target"] == "compartment"
+    assert "Lung Allograft Cell Classification" in "".join(notebook["cells"][0]["source"])
+
+    for index, cell in enumerate(notebook["cells"]):
+        if cell["cell_type"] == "code":
+            compile("".join(cell["source"]), f"{ALLOGRAFT_NOTEBOOK}:cell-{index}", "exec")
+
+
+def test_allograft_tutorial_uses_verified_dataset_and_donor_splits() -> None:
+    manifest = json.loads(ALLOGRAFT_MANIFEST.read_text(encoding="utf-8"))
+    notebook_text = ALLOGRAFT_NOTEBOOK.read_text(encoding="utf-8")
+
+    assert manifest["bytes"] == 1_180_621_333
+    assert manifest["sha256"] == (
+        "0648ce0268807301b5fe1b92955ed8e9d29c5f67812c6ed9ec3ed7da79e79b4c"
+    )
+    assert manifest["raw_counts_location"] == "raw.X"
+    assert manifest["canonical_download_url"] in notebook_text
+    assert manifest["sha256"] in notebook_text
+    assert "TRAIN_DONORS" in notebook_text
+    assert "EVAL_DONORS" in notebook_text
+    assert "TEST_DONORS" in notebook_text
+    assert "classification_report" in notebook_text
+    assert "confusion_matrix" in notebook_text
+    assert "sc.tl.umap" in notebook_text

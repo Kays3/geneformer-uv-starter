@@ -1,0 +1,15 @@
+{
+  "collection_id": "e276e3e2-197a-4524-abd1-a753a48dc33a",
+  "collection_url": "https://cellxgene.cziscience.com/collections/e276e3e2-197a-4524-abd1-a753a48dc33a",
+  "dataset_id": "10c0c666-bd99-4a5c-b697-f1be835f5427",
+  "dataset_version_id": "af6e81be-e65c-4821-987e-e0eb6c8acd59",
+  "canonical_download_url": "https://datasets.cellxgene.cziscience.com/af6e81be-e65c-4821-987e-e0eb6c8acd59.h5ad",
+  "file_name": "lung_allograft_biopsy.h5ad",
+  "bytes": 1180621333,
+  "sha256": "0648ce0268807301b5fe1b92955ed8e9d29c5f67812c6ed9ec3ed7da79e79b4c",
+  "cells": 56676,
+  "genes": 27320,
+  "raw_counts_location": "raw.X",
+  "classification_target": "compartment",
+  "verified_from_local_kd_copy": true
+}

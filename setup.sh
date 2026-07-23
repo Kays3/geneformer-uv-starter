@@ -79,6 +79,15 @@ if [[ -d "$analysis_root" ]]; then
     echo "Preserved the previous tutorial as $(basename "$tutorial_backup")."
   fi
   cp "$tutorial_source" "$tutorial_target"
+  allograft_tutorial_source="$repository_root/notebooks/02_lung_allograft_classification_tutorial.ipynb"
+  allograft_tutorial_target="$analysis_root/notebooks/02_lung_allograft_classification_tutorial.ipynb"
+  allograft_tutorial_backup="$analysis_root/notebooks/02_lung_allograft_classification_tutorial.user-backup.ipynb"
+  if [[ -e "$allograft_tutorial_target" ]] \
+    && ! cmp -s "$allograft_tutorial_source" "$allograft_tutorial_target"; then
+    cp "$allograft_tutorial_target" "$allograft_tutorial_backup"
+    echo "Preserved the previous allograft tutorial as $(basename "$allograft_tutorial_backup")."
+  fi
+  cp "$allograft_tutorial_source" "$allograft_tutorial_target"
   cp "$repository_root/scripts/smoke_test.py" "$analysis_root/scripts/smoke_test.py"
   missing_dependencies=()
   if ! grep -q 'ipywidgets' "$analysis_root/pyproject.toml"; then
@@ -86,6 +95,12 @@ if [[ -d "$analysis_root" ]]; then
   fi
   if ! grep -q '"pandas<3"' "$analysis_root/pyproject.toml"; then
     missing_dependencies+=('pandas<3')
+  fi
+  if ! grep -q 'scikit-learn' "$analysis_root/pyproject.toml"; then
+    missing_dependencies+=('scikit-learn>=1.5')
+  fi
+  if ! grep -q 'seaborn' "$analysis_root/pyproject.toml"; then
+    missing_dependencies+=('seaborn>=0.13')
   fi
   if (( ${#missing_dependencies[@]} > 0 )); then
     (

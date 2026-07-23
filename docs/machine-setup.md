@@ -152,6 +152,20 @@ First see whether the installed driver already works:
 nvidia-smi
 ```
 
+For a compact pass/fail check, run:
+
+```bash
+if command -v nvidia-smi >/dev/null && nvidia-smi >/dev/null 2>&1; then
+  echo "NVIDIA driver: OK"
+  nvidia-smi --query-gpu=name,driver_version --format=csv,noheader
+else
+  echo "NVIDIA driver: NOT READY"
+fi
+```
+
+Continue only when this prints `NVIDIA driver: OK`. If it prints `NOT READY`,
+use the appropriate driver instructions below before installing Geneformer.
+
 A table containing the GPU name, driver version, and CUDA version means the
 kernel driver is working. The CUDA version in this table is the newest CUDA
 runtime supported by the driver; it does not mean the CUDA Toolkit is
@@ -219,16 +233,117 @@ Close and reopen Terminal so its `PATH` includes `uv`, then verify everything:
 ```bash
 git --version
 git-lfs version
+git lfs install
 uv --version
 ```
 
-## 6. Download and set up Geneformer
+Because the command above installs the standalone version of `uv`, it can
+update itself without changing Ubuntu's system Python:
 
-The complete path from a powered-off machine to a working notebook is:
+```bash
+uv self update
+uv --version
+```
+
+If `uv` was installed later through an operating-system package manager,
+update it with that same package manager instead of `uv self update`.
+
+## 6. Networking and remote access
+
+Only enable remote-access software on machines where it is permitted by your
+organization. Treat RustDesk passwords, Tailscale authentication links, and
+device approval requests as secrets. Do not place them in Git or notebooks.
+
+### Install tmux
+
+`tmux` keeps a terminal job running when a remote connection closes:
+
+```bash
+sudo apt update
+sudo apt install -y tmux
+tmux new -s geneformer
+```
+
+Inside tmux, press `Ctrl`+`B`, release both keys, and press `D` to detach. Return
+to the session later with:
+
+```bash
+tmux attach -t geneformer
+```
+
+Run long setup or analysis commands inside this session. JupyterLab can also
+be started inside tmux, but its access token must still remain private.
+
+### Install and enable RustDesk 1.4.9 on ARM64
+
+The requested package is only for `aarch64`/ARM64 machines. Confirm the
+architecture first:
+
+```bash
+uname -m
+```
+
+Continue with this package only if the output is `aarch64`. Download
+`rustdesk-1.4.9-aarch64.deb` from the official RustDesk release source into
+your `Downloads` folder. Then inspect and install that exact local file:
+
+```bash
+cd "$HOME/Downloads"
+test -f rustdesk-1.4.9-aarch64.deb
+dpkg-deb --info rustdesk-1.4.9-aarch64.deb | head
+sudo apt install ./rustdesk-1.4.9-aarch64.deb
+```
+
+Enable the background service and verify it is active:
+
+```bash
+sudo systemctl enable --now rustdesk
+systemctl is-enabled rustdesk
+systemctl is-active rustdesk
+sudo systemctl status rustdesk --no-pager
+```
+
+The two short checks should print `enabled` and `active`. Open the RustDesk
+desktop application to review its ID, unattended-access policy, and password.
+Use a unique strong password and restrict access to approved operators. If the
+service does not start, inspect its current-boot log:
+
+```bash
+journalctl -u rustdesk -b --no-pager
+```
+
+### Install and connect Tailscale
+
+Install Tailscale using its official installer, then join the machine to your
+mesh network:
+
+```bash
+curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscale up
+```
+
+Open the authentication URL printed by `tailscale up`, sign in to the correct
+Tailscale account, and approve the device if your policy requires it. Verify
+the connection:
+
+```bash
+systemctl is-active tailscaled
+tailscale status
+tailscale ip -4
+```
+
+Expect `tailscaled` to be `active`, the machine to appear in `tailscale
+status`, and a Tailscale IPv4 address to be printed. Tailscale does not by
+itself grant RustDesk access; configure each product's access controls and
+your organization's firewall policy deliberately.
+
+## 7. Download and set up Geneformer
+
+The core path from a powered-off machine to a working notebook is:
 
 ![Setup flow from connecting cables through Wi-Fi, Ubuntu updates, NVIDIA driver verification, repository setup, GPU check, and JupyterLab](figures/03-setup-flow.svg)
 
-*Figure 3 — Complete setup flow. Do not proceed past the GPU check when
+*Figure 3 — Core setup flow. Do not proceed past the GPU check when
 `nvidia-smi` fails.*
 
 Choose a directory for projects, clone this repository, and run setup:
@@ -245,6 +360,36 @@ On an ARM64 GB10 machine with a working NVIDIA driver, automatic detection
 selects the CUDA 13.0 PyTorch profile. Other hardware uses the CPU profile.
 The default setup downloads the Geneformer V2 104M checkpoint and may take
 several minutes.
+
+Setup creates and syncs `geneformer-workspace/analysis/uv.lock`. This is the
+authoritative, exact environment lockfile. Check that it agrees with
+`pyproject.toml`:
+
+```bash
+cd geneformer-workspace/analysis
+uv lock --check
+```
+
+No output and exit status zero means the lockfile is current. Keep `uv.lock`
+with the analysis project when moving it to version control.
+
+Some tools expect a pip-style requirements file. Generate a compatibility
+lock from the same project when needed:
+
+```bash
+uv pip compile pyproject.toml -o requirements.lock.txt
+```
+
+Review and keep `requirements.lock.txt` beside `pyproject.toml` if another
+tool consumes it. It is an additional platform-specific export, not a
+replacement for `uv.lock`, and no lockfile can make operating-system drivers
+or hardware identical across machines.
+
+Return to the starter repository before using its commands:
+
+```bash
+cd ../..
+```
 
 Verify the completed environment:
 
@@ -275,7 +420,7 @@ Open the local URL printed in Terminal and select
 `notebooks/01_stage1_cell_type_tutorial.ipynb`. Only share a Jupyter token or
 URL with people who should be able to run code on this machine.
 
-## 7. Routine maintenance
+## 8. Routine maintenance
 
 Before updating, stop JupyterLab with `Ctrl`+`C` in its Terminal. Then update
 Ubuntu and this starter separately:
@@ -308,6 +453,10 @@ back them up. Repository setup does not make a backup of the machine.
 | Download is slow or stops | Move closer to the access point, prevent sleep, and rerun `./setup.sh` |
 | `sudo` rejects the password | Use the login password; typing is intentionally invisible |
 | `uv: command not found` | Close and reopen Terminal, or follow the path message printed by the installer |
+| RustDesk package will not install | Confirm `uname -m` is `aarch64` and the package is the ARM64 `.deb` |
+| RustDesk is not active | Run `journalctl -u rustdesk -b --no-pager` and inspect the service error |
+| Tailscale is not connected | Run `sudo tailscale up`, open its login URL, and check `tailscale status` |
+| tmux session appears missing | Run `tmux ls`, then attach with the exact session name shown |
 | `nvidia-smi` fails after an update | Reboot once; then use the diagnostics in section 4 |
 | Setup chooses CPU on a GB10 | Make sure `uname -m` is `aarch64` and `nvidia-smi` reports a GPU containing `GB10` |
 | CUDA smoke test fails | Do not reinstall random CUDA packages; confirm `nvidia-smi`, reboot, and use the supported driver path |
