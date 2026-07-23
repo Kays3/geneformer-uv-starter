@@ -630,7 +630,7 @@ if TRAINED_MODEL_DIR is not None:
         output_directory=str(RUN_DIR),
         output_prefix=f"{OUTPUT_PREFIX}_heldout",
         predict=True,
-        predict_metadata=["cell_id", "individual", "celltype"],
+        predict_metadata=["cell_id", "individual"],
     )
 
     with id_class_file.open("rb") as stream:

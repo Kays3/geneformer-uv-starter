@@ -83,6 +83,12 @@ def test_allograft_tutorial_is_valid_and_all_code_compiles() -> None:
 def test_allograft_tutorial_uses_verified_dataset_and_donor_splits() -> None:
     manifest = json.loads(ALLOGRAFT_MANIFEST.read_text(encoding="utf-8"))
     notebook_text = ALLOGRAFT_NOTEBOOK.read_text(encoding="utf-8")
+    notebook = json.loads(notebook_text)
+    code_text = "\n".join(
+        "".join(cell["source"])
+        for cell in notebook["cells"]
+        if cell["cell_type"] == "code"
+    )
 
     assert manifest["bytes"] == 1_180_621_333
     assert manifest["sha256"] == (
@@ -97,3 +103,4 @@ def test_allograft_tutorial_uses_verified_dataset_and_donor_splits() -> None:
     assert "classification_report" in notebook_text
     assert "confusion_matrix" in notebook_text
     assert "sc.tl.umap" in notebook_text
+    assert 'predict_metadata=["cell_id", "individual"]' in code_text

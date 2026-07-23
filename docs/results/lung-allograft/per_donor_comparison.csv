@@ -1,0 +1,5 @@
+method,test_donor,cells,errors,accuracy,macro_f1_present_classes
+Frozen embeddings + logistic regression,LTx_pt_06,1173,0,1.0,1.0
+Frozen embeddings + logistic regression,LTx_pt_08,1701,7,0.9958847736625515,0.9969418095174006
+Fine-tuned Geneformer classifier,LTx_pt_06,1173,0,1.0,1.0
+Fine-tuned Geneformer classifier,LTx_pt_08,1701,5,0.9970605526161082,0.9977754681094815

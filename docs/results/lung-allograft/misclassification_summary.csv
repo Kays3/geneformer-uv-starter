@@ -1,0 +1,5 @@
+method,true,predicted,count
+Frozen embeddings + logistic regression,Lymphoid,Epithelium,2
+Frozen embeddings + logistic regression,Lymphoid,Myeloid,5
+Fine-tuned Geneformer classifier,Lymphoid,Myeloid,4
+Fine-tuned Geneformer classifier,Myeloid,Lymphoid,1

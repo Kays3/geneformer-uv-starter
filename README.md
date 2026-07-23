@@ -191,9 +191,9 @@ The machine-readable record is in
 Set `LUNG_ALLOGRAFT_DATA_URL` to use a byte-identical institutional mirror.
 
 See the published **[lung allograft results report](docs/results/lung-allograft/README.md)**
-for held-out classification tables, the normalized confusion-matrix heatmap,
-and the pretrained cell-embedding UMAP. Fine-tuned results are clearly marked
-as pending until the opt-in training run is completed.
+for the completed frozen-versus-fine-tuned comparison, held-out classification
+tables, normalized confusion matrices, donor-specific results, embedding UMAPs,
+key findings, and limitations.
 
 ## Where everything is stored
 

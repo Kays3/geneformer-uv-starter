@@ -1,0 +1,3 @@
+method,accuracy,macro_f1,test_donors
+Frozen embeddings + logistic regression,0.9975643702157272,0.9982765399848675,"LTx_pt_06, LTx_pt_08"
+Fine-tuned Geneformer classifier,0.9982602644398052,0.9988577663640653,"LTx_pt_06, LTx_pt_08"

@@ -1,0 +1,6 @@
+,Endothelium,Epithelium,Lymphoid,Myeloid,Stromal
+Endothelium,1.0,0.0,0.0,0.0,0.0
+Epithelium,0.0,1.0,0.0,0.0,0.0
+Lymphoid,0.0,0.0,0.9958592132505176,0.004140786749482402,0.0
+Myeloid,0.0,0.0,0.00125,0.99875,0.0
+Stromal,0.0,0.0,0.0,0.0,1.0
