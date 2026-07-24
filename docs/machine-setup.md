@@ -248,6 +248,18 @@ uv --version
 If `uv` was installed later through an operating-system package manager,
 update it with that same package manager instead of `uv self update`.
 
+The repository setup installs JupyterLab as an isolated, user-wide UV tool.
+To install it before running the full Geneformer setup, or to repair it later:
+
+```bash
+./scripts/install_jupyterlab_tool.sh
+jupyter-lab --version
+```
+
+This makes `jupyter-lab` available to the current user across projects without
+changing Ubuntu's system Python. If the installer updates the shell `PATH`,
+open a new terminal before invoking `jupyter-lab`.
+
 ## 6. Networking and remote access
 
 Only enable remote-access software on machines where it is permitted by your

@@ -26,10 +26,6 @@ if [[ -d "$legacy_workspace_root" ]]; then
     echo "Preserve the workspace you need, remove the other, then rerun setup." >&2
     exit 1
   fi
-  if ! command -v uv >/dev/null 2>&1; then
-    echo "uv is required to migrate the existing Geneformer environment." >&2
-    exit 1
-  fi
   mv -- "$legacy_workspace_root" "$workspace_root"
   if [[ -d "$analysis_root/.venv" ]]; then
     rm -rf -- "$analysis_root/.venv"
@@ -67,6 +63,19 @@ if [[ "$profile" == "cu130" ]]; then
   fi
   echo "GPU: $(nvidia-smi --query-gpu=name,driver_version --format=csv,noheader | head -1)"
 fi
+
+if ! command -v uv >/dev/null 2>&1; then
+  cat >&2 <<'EOF'
+uv is required but was not found.
+
+Install it, then run ./setup.sh again:
+  macOS/Linux: curl -LsSf https://astral.sh/uv/install.sh | sh
+  Windows:     use WSL, or follow https://docs.astral.sh/uv/
+EOF
+  exit 1
+fi
+
+"$repository_root/scripts/install_jupyterlab_tool.sh"
 
 if [[ -d "$analysis_root" ]]; then
   echo "Updating the existing Geneformer starter environment..."
@@ -115,17 +124,6 @@ if [[ -d "$analysis_root" ]]; then
   fi
   echo "Geneformer is up to date. Run ./start.sh to open JupyterLab."
   exit 0
-fi
-
-if ! command -v uv >/dev/null 2>&1; then
-  cat >&2 <<'EOF'
-uv is required but was not found.
-
-Install it, then run ./setup.sh again:
-  macOS/Linux: curl -LsSf https://astral.sh/uv/install.sh | sh
-  Windows:     use WSL, or follow https://docs.astral.sh/uv/
-EOF
-  exit 1
 fi
 
 if ! command -v git-lfs >/dev/null 2>&1; then

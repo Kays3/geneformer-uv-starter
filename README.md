@@ -57,9 +57,10 @@ The first setup downloads Geneformer V2 104M and installs its Python
 environment. It can take several minutes. Setup automatically selects CUDA
 13.0 on a GB10 ARM64 appliance and CPU mode on other systems. It also installs
 a private uv-managed Python 3.12 with the C headers required by Geneformer's
-dependencies; the operating system Python is not modified. Models, datasets,
-notebooks, and results are stored in the visible `geneformer-workspace/`
-directory.
+dependencies. JupyterLab 4 is also installed as a user-wide uv tool, making
+`jupyter-lab` available outside this repository without modifying the
+operating system Python. Models, datasets, notebooks, and results are stored
+in the visible `geneformer-workspace/` directory.
 
 ### 3. Start Geneformer
 
@@ -84,6 +85,18 @@ To verify the environment without starting JupyterLab:
 ```bash
 ./start.sh check
 ```
+
+To install or repair only the user-wide JupyterLab command:
+
+```bash
+./scripts/install_jupyterlab_tool.sh
+jupyter-lab --version
+```
+
+UV keeps this tool in an isolated environment under the current user's data
+directory and links its commands into the UV tool bin directory. It is
+available to that user across projects; it is not installed into Ubuntu's
+system Python.
 
 If you installed an earlier release, pull and rerun setup. It updates the
 environment in place, adds `ipywidgets` to remove the `IProgress not found`
