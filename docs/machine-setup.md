@@ -100,7 +100,7 @@ large model download and prevent it from sleeping.
 GB10 machines should normally report `aarch64`. A conventional Intel or AMD
 workstation normally reports `x86_64`.
 
-## 3. Update Ubuntu safely
+## 3. Update Ubuntu safely (please skip if the computer utilizes Ubuntu now)
 
 Close other applications and save work, then install Ubuntu's available
 updates:
