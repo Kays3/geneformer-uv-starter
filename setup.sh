@@ -80,7 +80,7 @@ fi
 if [[ -d "$analysis_root" ]]; then
   echo "Updating the existing Geneformer starter environment..."
   mkdir -p "$analysis_root/notebooks"
-  tutorial_source="$repository_root/notebooks/01_stage1_cell_type_tutorial.ipynb"
+  tutorial_source="$repository_root/analysis/notebooks/01_stage1_cell_type_tutorial.ipynb"
   tutorial_target="$analysis_root/notebooks/01_stage1_cell_type_tutorial.ipynb"
   tutorial_backup="$analysis_root/notebooks/01_stage1_cell_type_tutorial.user-backup.ipynb"
   if [[ -e "$tutorial_target" ]] && ! cmp -s "$tutorial_source" "$tutorial_target"; then
@@ -88,7 +88,7 @@ if [[ -d "$analysis_root" ]]; then
     echo "Preserved the previous tutorial as $(basename "$tutorial_backup")."
   fi
   cp "$tutorial_source" "$tutorial_target"
-  allograft_tutorial_source="$repository_root/notebooks/02_lung_allograft_classification_tutorial.ipynb"
+  allograft_tutorial_source="$repository_root/analysis/notebooks/02_lung_allograft_classification_tutorial.ipynb"
   allograft_tutorial_target="$analysis_root/notebooks/02_lung_allograft_classification_tutorial.ipynb"
   allograft_tutorial_backup="$analysis_root/notebooks/02_lung_allograft_classification_tutorial.user-backup.ipynb"
   if [[ -e "$allograft_tutorial_target" ]] \
@@ -97,7 +97,7 @@ if [[ -d "$analysis_root" ]]; then
     echo "Preserved the previous allograft tutorial as $(basename "$allograft_tutorial_backup")."
   fi
   cp "$allograft_tutorial_source" "$allograft_tutorial_target"
-  cp "$repository_root/scripts/smoke_test.py" "$analysis_root/scripts/smoke_test.py"
+  cp "$repository_root/analysis/scripts/smoke_test.py" "$analysis_root/scripts/smoke_test.py"
   missing_dependencies=()
   if ! grep -q 'ipywidgets' "$analysis_root/pyproject.toml"; then
     missing_dependencies+=('ipywidgets>=8.1.8')

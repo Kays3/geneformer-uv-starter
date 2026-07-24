@@ -1,7 +1,7 @@
 # Lung allograft classification results
 
 This report records the completed donor-held-out comparison from
-[`02_lung_allograft_classification_tutorial.ipynb`](../../../notebooks/02_lung_allograft_classification_tutorial.ipynb):
+[`02_lung_allograft_classification_tutorial.ipynb`](../../notebooks/02_lung_allograft_classification_tutorial.ipynb):
 
 1. frozen pretrained Geneformer V2 104M cell embeddings with a class-balanced
    logistic-regression probe; and
@@ -38,7 +38,7 @@ metadata fix described below.
 Donors are disjoint across training, model-selection, and testing splits. Raw
 integer counts were taken from `raw.X`; the normalized source `X` matrix was
 not tokenized. The source H5AD matched the expected SHA-256 checksum in
-[`datasets/lung_allograft.manifest.json`](../../../datasets/lung_allograft.manifest.json).
+[`analysis/datasets/lung_allograft.manifest.json`](../../datasets/lung_allograft.manifest.json).
 
 ## Overall comparison
 
@@ -184,7 +184,7 @@ tutorial notebook and its builder script.
 Compact, reviewable result tables and figures are committed in this directory:
 
 ```text
-docs/results/lung-allograft/
+analysis/results/lung-allograft/
 ```
 
 Large or regenerable assets remain in the Git-ignored local workspace:
@@ -214,4 +214,4 @@ is approximately 398 MiB, above GitHub's normal single-file limit.
 5. Keep the documented donor split unchanged for a direct comparison.
 
 The source dataset identity and checksum are recorded in
-[`datasets/lung_allograft.manifest.json`](../../../datasets/lung_allograft.manifest.json).
+[`analysis/datasets/lung_allograft.manifest.json`](../../datasets/lung_allograft.manifest.json).

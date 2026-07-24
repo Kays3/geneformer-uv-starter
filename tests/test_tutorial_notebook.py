@@ -4,10 +4,11 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-NOTEBOOK = ROOT / "notebooks" / "01_stage1_cell_type_tutorial.ipynb"
-MANIFEST = ROOT / "datasets" / "nsclc_integrated.manifest.json"
-ALLOGRAFT_NOTEBOOK = ROOT / "notebooks" / "02_lung_allograft_classification_tutorial.ipynb"
-ALLOGRAFT_MANIFEST = ROOT / "datasets" / "lung_allograft.manifest.json"
+ANALYSIS = ROOT / "analysis"
+NOTEBOOK = ANALYSIS / "notebooks" / "01_stage1_cell_type_tutorial.ipynb"
+MANIFEST = ANALYSIS / "datasets" / "nsclc_integrated.manifest.json"
+ALLOGRAFT_NOTEBOOK = ANALYSIS / "notebooks" / "02_lung_allograft_classification_tutorial.ipynb"
+ALLOGRAFT_MANIFEST = ANALYSIS / "datasets" / "lung_allograft.manifest.json"
 
 
 def test_tutorial_notebook_is_valid_and_all_code_compiles() -> None:
