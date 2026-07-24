@@ -8,25 +8,22 @@ automatically and use their NVIDIA GB10 GPU. The environment is isolated and rep
 This is a community setup helper. It is not affiliated with or endorsed by the
 Geneformer authors.
 
-## New machine? Start here
+## New GPU machine? Start here
 
-If the computer is not set up yet, follow the complete
-**[machine setup tutorial](docs/machine-setup.md)**. It covers:
+ASUS Ascent GX10 and Lenovo ThinkStation PGX machines arrive with Ubuntu-based
+DGX OS and the NVIDIA software stack preinstalled. Do not reinstall Ubuntu.
+Follow the focused **[machine setup tutorial](docs/machine-setup.md)** to:
 
-- connecting the monitor, keyboard, mouse, and power, then joining Wi-Fi;
-- completing Ubuntu first boot and installing operating-system updates;
-- safely verifying or updating NVIDIA GPU drivers;
-- special guidance for ASUS Ascent GX10 and Lenovo ThinkStation PGX systems;
-- configuring tmux, RustDesk, and Tailscale for approved remote access;
-- installing this repository and testing that PyTorch can use the GPU; and
-- routine updates and troubleshooting.
-
-If Ubuntu is already current and `nvidia-smi` works, continue with the quick
-start below.
+- update the NVIDIA driver and platform stack through the supported vendor
+  updater;
+- verify the GB10 GPU with `nvidia-smi`;
+- install Git LFS and UV;
+- install JupyterLab user-wide with `uv tool install`; and
+- install and validate the locked Geneformer CUDA environment.
 
 ## Quick start
 
-### 1. Install the two prerequisites
+### 1. Install prerequisites and user-wide JupyterLab
 
 You need [Git LFS](https://git-lfs.com/) and
 [uv](https://docs.astral.sh/uv/getting-started/installation/).
@@ -37,13 +34,27 @@ Ubuntu or Debian:
 sudo apt-get update
 sudo apt-get install -y git git-lfs curl
 curl -LsSf https://astral.sh/uv/install.sh | sh
+source "$HOME/.local/bin/env"
+uv tool install 'jupyterlab>=4,<5'
+uv tool update-shell
 ```
 
 macOS with Homebrew:
 
 ```bash
 brew install git git-lfs uv
+uv tool install 'jupyterlab>=4,<5'
+uv tool update-shell
 ```
+
+Open a new terminal and confirm that the user-wide command is available:
+
+```bash
+jupyter-lab --version
+```
+
+UV calls this a user-wide tool installation: JupyterLab is available to the
+current user across projects, while Ubuntu's system Python remains unchanged.
 
 ### 2. Clone and set up
 
