@@ -8,9 +8,11 @@ The setup sequence is:
 
 1. update the supported NVIDIA driver and platform stack;
 2. verify the GPU with `nvidia-smi`;
-3. install Git LFS and UV;
-4. install JupyterLab user-wide through UV; and
-5. install and test Geneformer.
+3. install Tailscale, tmux, Git LFS, and UV;
+4. connect both computers to the same Tailscale network;
+5. install JupyterLab user-wide through UV;
+6. install and test Geneformer; and
+7. run JupyterLab persistently in tmux over Tailscale.
 
 ## Before you start
 
@@ -20,6 +22,7 @@ You need:
   supplied operating system;
 - a stable internet connection and power source;
 - administrator (`sudo`) access;
+- a second computer with a browser, signed in to the same Tailscale network;
 - at least 50 GB free for the default model and environment; and
 - a maintenance window for the NVIDIA update and reboot.
 
@@ -92,26 +95,38 @@ dkms status
 journalctl -k -b | grep -iE 'nvidia|nouveau|secure boot'
 ```
 
-## 3. Install Git LFS and UV
+## 3. Install Tailscale, tmux, Git LFS, and UV
 
 Ubuntu is already installed. The following `apt-get update` refreshes package
 metadata; it does not reinstall or upgrade the operating system:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y git git-lfs curl
+sudo apt-get install -y git git-lfs curl tmux
+curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscale up
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source "$HOME/.local/bin/env"
 ```
 
-Open a new terminal and verify:
+`sudo tailscale up` prints an authentication URL. Open it and add the machine
+to your tailnet. Install Tailscale on the client computer as well and sign in
+to the same tailnet. Then verify on the Geneformer machine:
 
 ```bash
 git --version
 git-lfs version
 git lfs install
+tmux -V
+tailscale status
+tailscale ip -4
 uv --version
 ```
+
+The last Tailscale command should print this machine's stable tailnet IPv4
+address. The remote launcher binds JupyterLab only to that address—not to
+`0.0.0.0`—so it is not exposed on every network interface. Tailnet access
+rules still determine which Tailscale users and devices can connect.
 
 UV manages its own Python installations and isolated environments without
 modifying Ubuntu's system Python.
@@ -202,17 +217,72 @@ cd ../..
 
 No output from `uv lock --check` means the lockfile matches the project.
 
-## 7. Start JupyterLab
+## 7. Start JupyterLab persistently over Tailscale
 
-Start JupyterLab with the locked Geneformer environment:
+Start JupyterLab in a detached tmux session, bound to the machine's Tailscale
+IPv4 address:
+
+```bash
+./start.sh remote
+./start.sh remote-status
+```
+
+The status output contains a URL such as
+`http://100.x.y.z:8888/lab?token=...`. Open that complete URL on the client
+computer. Keep the token private. Both computers must be connected to
+Tailscale, but they do not need to be on the same physical network.
+
+The process survives a dropped SSH connection because it runs inside tmux.
+Use these lifecycle commands from the repository:
+
+```bash
+./start.sh remote-status  # show the token URL and recent output
+./start.sh remote-attach  # interact with Jupyter; detach with Ctrl-b, then d
+./start.sh remote-stop    # stop JupyterLab when finished
+```
+
+Inside an attached tmux session, press `Ctrl-b` and then `d` to detach without
+stopping JupyterLab. Do not press `Ctrl-c` unless you intend to stop the
+server. The starter notebooks are under
+`geneformer-workspace/analysis/notebooks/`.
+
+The launcher automatically loads the repository's
+[`config/tmux.conf`](../config/tmux.conf) on an isolated tmux socket, so it
+does not replace your personal `~/.tmux.conf` or alter unrelated tmux
+sessions. Mouse scrolling, pane selection, and a 100,000-line history are
+enabled. Copy and paste work as follows:
+
+- Drag with the mouse to copy a selection to tmux's buffer. When the SSH
+  terminal supports OSC 52, tmux also sends it to the client clipboard.
+- Press `Ctrl-b`, then `[` to enter keyboard copy mode. Move to the desired
+  text, press `v` to begin selecting, and press `y` to copy.
+- Press `Ctrl-b`, then `]` to paste the latest tmux buffer.
+- Hold `Shift` while dragging if you want the terminal application's native
+  selection instead of tmux mouse handling, then use the client's normal copy
+  shortcut.
+
+Clipboard forwarding depends on the SSH terminal's OSC 52 policy. The tmux
+buffer shortcuts continue to work even when client clipboard forwarding is
+disabled.
+
+To reconnect after logging out, SSH to the machine over its Tailscale IP (or
+use its MagicDNS name), enter the repository, and run:
+
+```bash
+cd "$HOME/projects/geneformer-uv-starter"
+./start.sh remote-status
+./start.sh remote-attach
+```
+
+Tailscale SSH is optional. Standard OpenSSH over the Tailscale network works
+without enabling it. If your tailnet administrator permits Tailscale SSH, it
+can be enabled separately with `sudo tailscale set --ssh`.
+
+For local desktop-only use, the original foreground command remains available:
 
 ```bash
 ./start.sh
 ```
-
-Open the local URL printed in the terminal. The starter notebooks are under
-`geneformer-workspace/analysis/notebooks/`. Stop JupyterLab with `Ctrl`+`C`
-and keep its access token private.
 
 For a general JupyterLab session outside Geneformer, use the user-wide command:
 
@@ -246,6 +316,10 @@ Do not substitute a generic driver-install command for the vendor update path.
 | `uv: command not found` | Open a new terminal or follow the PATH message printed by the UV installer |
 | `jupyter-lab: command not found` | Run `uv tool update-shell`, open a new terminal, and check `uv tool list` |
 | Git LFS is missing | Run `sudo apt-get install -y git-lfs` and `git lfs install` |
+| `Tailscale is not connected` | Run `sudo tailscale up`, authenticate, and check `tailscale status` |
+| Remote URL does not open | Connect the client to the same tailnet and verify `tailscale ping <server-IP>` |
+| tmux session already exists | Use `./start.sh remote-status` or `./start.sh remote-attach` |
+| Port 8888 is occupied | Check `./start.sh remote-status`; Jupyter retries on the next available port |
 | Model download stops | Check internet access and free disk space, then rerun `./setup.sh` |
 
 For model choices, profiles, workspace layout, datasets, and application-level

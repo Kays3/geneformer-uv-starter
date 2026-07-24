@@ -97,6 +97,35 @@ To verify the environment without starting JupyterLab:
 ./start.sh check
 ```
 
+### Remote use with Tailscale and tmux
+
+On the Ubuntu Geneformer machine, install and connect Tailscale and tmux once:
+
+```bash
+sudo apt-get install -y curl tmux
+curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscale up
+```
+
+Connect the browser computer to the same tailnet, then start a persistent,
+tailnet-only JupyterLab session:
+
+```bash
+./start.sh remote
+./start.sh remote-status
+```
+
+Open the complete token URL shown by `remote-status`. The session survives SSH
+disconnects. Reconnect with `./start.sh remote-attach` and detach with
+`Ctrl-b`, then `d`; stop it with `./start.sh remote-stop`. JupyterLab binds to
+the Tailscale IPv4 address rather than every network interface. The included
+[`config/tmux.conf`](config/tmux.conf) enables mouse control, extended scrollback,
+and tmux/OSC-52 clipboard integration without changing your personal tmux
+configuration.
+
+See the [machine setup tutorial](docs/machine-setup.md#7-start-jupyterlab-persistently-over-tailscale)
+for the complete beginning-to-end workflow and troubleshooting.
+
 To install or repair only the user-wide JupyterLab command:
 
 ```bash
