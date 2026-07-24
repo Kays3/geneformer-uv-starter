@@ -223,7 +223,7 @@ the byte count before using the file and offers an optional SHA-256 pass.
 - SHA-256: `141db65b76b1e34f895131e36c74cd829db05fc037f8cd2f422c2960a5a266cd`
 
 The machine-readable record is in
-[`datasets/nsclc_integrated.manifest.json`](datasets/nsclc_integrated.manifest.json).
+[`analysis/datasets/nsclc_integrated.manifest.json`](analysis/datasets/nsclc_integrated.manifest.json).
 Set `GENEFORMER_DATA_URL` before starting JupyterLab to use a byte-identical
 institutional or Google Drive mirror instead.
 
@@ -240,15 +240,31 @@ optional SHA-256 pass.
 - SHA-256: `0648ce0268807301b5fe1b92955ed8e9d29c5f67812c6ed9ec3ed7da79e79b4c`
 
 The machine-readable record is in
-[`datasets/lung_allograft.manifest.json`](datasets/lung_allograft.manifest.json).
+[`analysis/datasets/lung_allograft.manifest.json`](analysis/datasets/lung_allograft.manifest.json).
 Set `LUNG_ALLOGRAFT_DATA_URL` to use a byte-identical institutional mirror.
 
-See the published **[lung allograft results report](docs/results/lung-allograft/README.md)**
+See the published **[lung allograft results report](analysis/results/lung-allograft/README.md)**
 for the completed frozen-versus-fine-tuned comparison, held-out classification
 tables, normalized confusion matrices, donor-specific results, embedding UMAPs,
 key findings, and limitations.
 
 ## Where everything is stored
+
+The reviewed analysis source lives in one canonical, tracked directory:
+
+```text
+analysis/
+├── datasets/    # small provenance manifests, not downloaded matrices
+├── notebooks/   # distributable tutorials
+├── profiles/    # CPU, portable, and CUDA dependency definitions
+├── results/     # reviewed reports, figures, and small result tables
+└── scripts/     # analysis entry points, builders, and smoke test
+```
+
+Setup copies only the selected profile, runnable notebooks, and runtime scripts
+into the ignored workspace below. This keeps one upstream source for analysis
+files while preserving a writable local area for datasets, environments, and
+experimental outputs.
 
 Setup creates this visible, Git-ignored local workspace:
 

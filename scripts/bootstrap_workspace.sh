@@ -58,7 +58,8 @@ uv python install 3.12 --no-bin
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 setup_root="$(cd "$script_dir/.." && pwd)"
-template_dir="$setup_root/templates"
+analysis_source="$setup_root/analysis"
+profile_dir="$analysis_source/profiles"
 
 mkdir -p "$workspace_input"
 workspace_root="$(realpath "$workspace_input")"
@@ -136,13 +137,13 @@ mkdir -p \
   "$analysis_root/notebooks" \
   "$analysis_root/configs" \
   "$analysis_root/results"
-cp "$template_dir/.python-version" "$analysis_root/.python-version"
-cp "$template_dir/.gitignore" "$analysis_root/.gitignore"
-cp "$template_dir/README.md" "$analysis_root/README.md"
-cp "$template_dir/pyproject.$profile.toml" "$analysis_root/pyproject.toml"
-cp "$template_dir/analysis.py" "$analysis_root/scripts/analysis.py"
-cp "$setup_root/scripts/smoke_test.py" "$analysis_root/scripts/smoke_test.py"
-cp -R "$setup_root/notebooks/." "$analysis_root/notebooks/"
+cp "$analysis_source/.python-version" "$analysis_root/.python-version"
+cp "$analysis_source/.gitignore" "$analysis_root/.gitignore"
+cp "$analysis_source/README.md" "$analysis_root/README.md"
+cp "$profile_dir/pyproject.$profile.toml" "$analysis_root/pyproject.toml"
+cp "$analysis_source/scripts/analysis.py" "$analysis_root/scripts/analysis.py"
+cp "$analysis_source/scripts/smoke_test.py" "$analysis_root/scripts/smoke_test.py"
+cp -R "$analysis_source/notebooks/." "$analysis_root/notebooks/"
 chmod +x "$analysis_root/scripts/analysis.py" "$analysis_root/scripts/smoke_test.py"
 
 git -C "$geneformer_root" rev-parse HEAD > "$analysis_root/.geneformer-commit"

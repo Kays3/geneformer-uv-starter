@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.smoke_test import find_models
+from analysis.scripts.smoke_test import find_models
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -46,14 +46,14 @@ def test_find_models_ignores_git_lfs_pointer(tmp_path: Path) -> None:
 
 @pytest.mark.parametrize("profile", ["cpu", "cu130", "default"])
 def test_analysis_profiles_constrain_pandas_below_version_three(profile: str) -> None:
-    template = ROOT / "templates" / f"pyproject.{profile}.toml"
+    template = ROOT / "analysis" / "profiles" / f"pyproject.{profile}.toml"
 
     assert '"pandas<3"' in template.read_text(encoding="utf-8")
 
 
 @pytest.mark.parametrize("profile", ["cpu", "cu130", "default"])
 def test_analysis_profiles_include_allograft_tutorial_dependencies(profile: str) -> None:
-    template = ROOT / "templates" / f"pyproject.{profile}.toml"
+    template = ROOT / "analysis" / "profiles" / f"pyproject.{profile}.toml"
     template_text = template.read_text(encoding="utf-8")
 
     assert '"scikit-learn>=1.5"' in template_text
