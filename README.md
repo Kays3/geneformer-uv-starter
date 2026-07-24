@@ -8,21 +8,20 @@ automatically and use their NVIDIA GB10 GPU. The environment is isolated and rep
 This is a community setup helper. It is not affiliated with or endorsed by the
 Geneformer authors.
 
-## New machine? Start here
+## NVIDIA GPU machine setup
 
-If the computer is not set up yet, follow the complete
-**[machine setup tutorial](docs/machine-setup.md)**. It covers:
+The focused **[GPU setup tutorial](docs/machine-setup.md)** assumes Ubuntu or
+vendor-supplied DGX OS is already installed. It does not reinstall Ubuntu or
+run a general system upgrade. It covers only what this starter needs:
 
-- connecting the monitor, keyboard, mouse, and power, then joining Wi-Fi;
-- completing Ubuntu first boot and installing operating-system updates;
-- safely verifying or updating NVIDIA GPU drivers;
-- special guidance for ASUS Ascent GX10 and Lenovo ThinkStation PGX systems;
-- configuring tmux, RustDesk, and Tailscale for approved remote access;
-- installing this repository and testing that PyTorch can use the GPU; and
-- routine updates and troubleshooting.
+- verify that the existing NVIDIA driver responds through `nvidia-smi`;
+- install Git LFS and UV;
+- create the locked Geneformer environment; and
+- confirm that PyTorch completes a CUDA operation.
 
-If Ubuntu is already current and `nvidia-smi` works, continue with the quick
-start below.
+ASUS Ascent GX10 and Lenovo ThinkStation PGX owners should keep the supplied
+DGX OS image and use their vendor-supported recovery and update path only when
+the platform stack needs maintenance.
 
 ## Quick start
 
@@ -142,8 +141,10 @@ The report should contain values similar to:
 }
 ```
 
-Keep DGX OS and the NVIDIA driver updated through the vendor-supported update
-path. Partner appliance releases may not arrive on exactly the same date.
+The Geneformer setup does not require a DGX OS upgrade when `nvidia-smi`
+already works. When platform maintenance is necessary, use the
+vendor-supported update path; partner appliance releases may not arrive on
+exactly the same date.
 
 ## Override automatic hardware selection
 
